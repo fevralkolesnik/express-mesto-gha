@@ -3,7 +3,7 @@ const Card = require('../models/card');
 module.exports.getCards = (req, res) => {
   Card.find({})
     .then((cards) => res.send({ data: cards }))
-    .catch(() => res.status(500).send({ message: 'Ошибка по умолчанию.' }));
+    .catch(() => res.status(500).send({ message: res.message[500] }));
 };
 
 module.exports.createCard = (req, res) => {
@@ -13,9 +13,9 @@ module.exports.createCard = (req, res) => {
     .then((card) => res.send({ data: card }))
     .catch((err) => {
       if (err.name === 'ValidationError') {
-        res.status(400).send({ message: 'Переданы некорректные данные при создании карточки.' });
+        res.status(400).send({ message: res.message[400] });
       } else {
-        res.status(500).send({ message: 'Ошибка по умолчанию.' });
+        res.status(500).send({ message: res.message[500] });
       }
     });
 };
@@ -27,9 +27,9 @@ module.exports.deleteCard = (req, res) => {
     .then((card) => res.send({ data: card }))
     .catch((err) => {
       if (err.name === 'CastError') {
-        res.status(404).send({ message: 'Карточка с указанным _id не найдена.' });
+        res.status(404).send({ message: res.message[404] });
       } else {
-        res.status(500).send({ message: 'Ошибка по умолчанию.' });
+        res.status(500).send({ message: res.message[500] });
       }
     });
 };
@@ -43,9 +43,9 @@ module.exports.likeCard = (req, res) => {
     .then((card) => res.send({ data: card }))
     .catch((err) => {
       if (err.name === 'CastError') {
-        res.status(404).send({ message: 'Передан несуществующий _id карточки.' });
+        res.status(404).send({ message: res.message[404] });
       } else {
-        res.status(500).send({ message: 'Ошибка по умолчанию.' });
+        res.status(500).send({ message: res.message[500] });
       }
     });
 };
@@ -59,9 +59,9 @@ module.exports.dislikeCard = (req, res) => {
     .then((card) => res.send({ data: card }))
     .catch((err) => {
       if (err.name === 'CastError') {
-        res.status(404).send({ message: 'Передан несуществующий _id карточки.' });
+        res.status(404).send({ message: res.message[404] });
       } else {
-        res.status(500).send({ message: 'Ошибка по умолчанию.' });
+        res.status(500).send({ message: res.message[500] });
       }
     });
 };

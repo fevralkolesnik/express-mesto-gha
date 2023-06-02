@@ -3,7 +3,7 @@ const User = require('../models/user');
 const getUsers = (req, res) => {
   User.find({})
     .then((users) => res.status(200).send({ data: users }))
-    .catch(() => res.status(500).send({ message: 'Ошибка по умолчанию.' }));
+    .catch(() => res.status(500).send({ message: res.message[500] }));
 };
 
 const getUser = (req, res) => {
@@ -13,9 +13,9 @@ const getUser = (req, res) => {
     .then((user) => res.status(200).send({ data: user }))
     .catch((err) => {
       if (err.name === 'CastError') {
-        res.status(404).send({ message: 'Пользователь по указанному _id не найден.' });
+        res.status(404).send({ message: res.message[404] });
       } else {
-        res.status(500).send({ message: 'Ошибка по умолчанию.' });
+        res.status(500).send({ message: res.message[500] });
       }
     });
 };
@@ -27,9 +27,9 @@ const createUser = (req, res) => {
     .then((user) => res.status(200).send({ data: user }))
     .catch((err) => {
       if (err.name === 'ValidationError') {
-        res.status(400).send({ message: 'Переданы некорректные данные при создании пользователя.' });
+        res.status(400).send({ message: res.message[400] });
       } else {
-        res.status(500).send({ message: 'Ошибка по умолчанию.' });
+        res.status(500).send({ message: res.message[500] });
       }
     });
 };
@@ -39,12 +39,12 @@ const updateUser = (req, res) => {
     .then((user) => res.status(200).send({ data: user }))
     .catch((err) => {
       if (err.name === 'ValidationError') {
-        res.status(400).send({ message: 'Переданы некорректные данные при обновлении пользователя.' });
+        res.status(400).send({ message: res.message[400] });
       }
       if (err.name === 'CastError') {
-        res.status(404).send({ message: 'Пользователь с указанным _id не найден.' });
+        res.status(404).send({ message: res.message[404] });
       } else {
-        res.status(500).send({ message: 'Ошибка по умолчанию.' });
+        res.status(500).send({ message: res.message[400] });
       }
     });
 };
@@ -54,12 +54,12 @@ const updateAvatarUser = (req, res) => {
     .then((user) => res.status(200).send({ data: user }))
     .catch((err) => {
       if (err.name === 'ValidationError') {
-        res.status(400).send({ message: 'Переданы некорректные данные при обновлении аватара.' });
+        res.status(400).send({ message: res.message[400] });
       }
       if (err.name === 'CastError') {
-        res.status(404).send({ message: 'Пользователь с указанным _id не найден.' });
+        res.status(404).send({ message: res.message[404] });
       } else {
-        res.status(500).send({ message: 'Ошибка по умолчанию.' });
+        res.status(500).send({ message: res.message[500] });
       }
     });
 };
