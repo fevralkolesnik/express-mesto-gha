@@ -1,66 +1,91 @@
+const mongoose = require('mongoose');
 const User = require('../models/user');
+const DocumentNotFoundError = require('../errors/DocumentNotFoundError');
+const ValidationError = require('../errors/ValidationError');
+const UnhandeledError = require('../errors/UnhandeledError');
 
-const getUsers = (req, res) => {
+const getUsers = (req, res, next) => {
   User.find({})
-    .then((users) => res.status(200).send({ data: users }))
-    .catch(() => res.status(500).send({ message: res.message[500] }));
-};
-
-const getUser = (req, res) => {
-  const { userId } = req.params;
-
-  User.find({ _id: userId })
+    .orFail(() => {
+      Error();
+    })
     .then((user) => res.status(200).send({ data: user }))
     .catch((err) => {
-      if (err.name === 'CastError') {
-        res.status(404).send({ message: res.message[404] });
+      if (err instanceof mongoose.Error.DocumentNotFoundError) {
+        throw new DocumentNotFoundError('Пользователи не найдены');
       } else {
-        res.status(500).send({ message: res.message[500] });
+        throw new UnhandeledError('Ошибка по-умолчанию');
       }
+    })
+    .catch((err) => {
+      next(err);
     });
 };
 
-const createUser = (req, res) => {
+const getUser = (req, res, next) => {
+  const { userId } = req.params;
+
+  User.find({ _id: userId })
+    .orFail(() => {
+      Error();
+    })
+    .then((user) => res.status(200).send({ data: user }))
+    .catch((err) => {
+      if (err instanceof mongoose.Error.DocumentNotFoundError) {
+        throw new DocumentNotFoundError('Пользователь по указанному _id не найден');
+      } else {
+        throw new UnhandeledError('Ошибка по-умолчанию');
+      }
+    })
+    .catch((err) => {
+      next(err);
+    });
+};
+
+const createUser = (req, res, next) => {
   const { name, about, avatar } = req.body;
 
   User.create({ name, about, avatar })
     .then((user) => res.status(200).send({ data: user }))
     .catch((err) => {
-      if (err.name === 'ValidationError') {
-        res.status(400).send({ message: res.message[400] });
+      if (err instanceof mongoose.Error.ValidationError) {
+        throw new ValidationError('Переданы некорректные данные при создании пользователя');
       } else {
-        res.status(500).send({ message: res.message[500] });
+        throw new UnhandeledError('Ошибка по-умолчанию');
       }
+    })
+    .catch((err) => {
+      next(err);
     });
 };
 
-const updateUser = (req, res) => {
+const updateUser = (req, res, next) => {
   User.findByIdAndUpdate(req.user._id, req.body, { new: true, runValidators: true })
     .then((user) => res.status(200).send({ data: user }))
     .catch((err) => {
-      if (err.name === 'ValidationError') {
-        res.status(400).send({ message: res.message[400] });
-      }
-      if (err.name === 'CastError') {
-        res.status(404).send({ message: res.message[404] });
+      if (err instanceof mongoose.Error.ValidationError) {
+        throw new ValidationError('Переданы некорректные данные при обновлении пользователя');
       } else {
-        res.status(500).send({ message: res.message[400] });
+        throw new UnhandeledError('Ошибка по-умолчанию');
       }
+    })
+    .catch((err) => {
+      next(err);
     });
 };
 
-const updateAvatarUser = (req, res) => {
+const updateAvatarUser = (req, res, next) => {
   User.findByIdAndUpdate(req.user._id, req.body, { new: true, runValidators: true })
     .then((user) => res.status(200).send({ data: user }))
     .catch((err) => {
-      if (err.name === 'ValidationError') {
-        res.status(400).send({ message: res.message[400] });
-      }
-      if (err.name === 'CastError') {
-        res.status(404).send({ message: res.message[404] });
+      if (err instanceof mongoose.Error.ValidationError) {
+        throw new ValidationError('Переданы некорректные данные при обновлении аватара');
       } else {
-        res.status(500).send({ message: res.message[500] });
+        throw new UnhandeledError('Ошибка по-умолчанию');
       }
+    })
+    .catch((err) => {
+      next(err);
     });
 };
 
