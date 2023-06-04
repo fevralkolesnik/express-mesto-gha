@@ -3,19 +3,13 @@ const User = require('../models/user');
 const DocumentNotFoundError = require('../errors/DocumentNotFoundError');
 const ValidationError = require('../errors/ValidationError');
 const UnhandeledError = require('../errors/UnhandeledError');
+const CastError = require('../errors/CastError');
 
 const getUsers = (req, res, next) => {
   User.find({})
-    .orFail(() => {
-      Error();
-    })
     .then((user) => res.status(200).send({ data: user }))
-    .catch((err) => {
-      if (err instanceof mongoose.Error.DocumentNotFoundError) {
-        throw new DocumentNotFoundError('Пользователи не найдены');
-      } else {
-        throw new UnhandeledError('Ошибка по-умолчанию');
-      }
+    .catch(() => {
+      throw new UnhandeledError('Ошибка по-умолчанию');
     })
     .catch((err) => {
       next(err);
@@ -26,16 +20,16 @@ const getUser = (req, res, next) => {
   const { userId } = req.params;
 
   User.find({ _id: userId })
-    .orFail(() => {
-      Error();
-    })
+    .orFail()
     .then((user) => res.status(200).send({ data: user }))
     .catch((err) => {
       if (err instanceof mongoose.Error.DocumentNotFoundError) {
         throw new DocumentNotFoundError('Пользователь по указанному _id не найден');
-      } else {
-        throw new UnhandeledError('Ошибка по-умолчанию');
       }
+      if (err instanceof mongoose.Error.CastError) {
+        throw new CastError('Передан невалидный _id');
+      }
+      throw new UnhandeledError('Ошибка по-умолчанию');
     })
     .catch((err) => {
       next(err);
