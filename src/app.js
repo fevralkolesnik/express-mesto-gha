@@ -1,19 +1,23 @@
 const express = require('express');
 const mongoose = require('mongoose');
+const { errors } = require('celebrate');
 const DocumentNotFoundError = require('./errors/DocumentNotFoundError');
+const { createUser, login } = require('./controllers/users');
+const { auth } = require('./middlewares/auth');
+const { errorHandler } = require('./middlewares/errorHandler');
+const { validationCreateUser, validationLogin } = require('./middlewares/joiValidation');
 
 const { PORT = 3000 } = process.env;
 const app = express();
 
 app.use(express.json());
 
-app.use((req, res, next) => {
-  req.user = {
-    _id: '6433c923c6d64dbc35894af9',
-  };
+mongoose.connect('mongodb://127.0.0.1:27017/mestodb');
 
-  next();
-});
+app.post('/users/signup', validationCreateUser, createUser);
+app.post('/users/signin', validationLogin, login);
+
+app.use(auth);
 
 app.use('/users', require('./routes/users'));
 app.use('/cards', require('./routes/cards'));
@@ -22,12 +26,8 @@ app.use(() => {
   throw new DocumentNotFoundError('Данная страница не найдена');
 });
 
-// eslint-disable-next-line no-unused-vars
-app.use((err, req, res, next) => {
-  const { errCode, message } = err;
-  res.status(errCode).send({ message });
-});
+app.use(errors());
 
-mongoose.connect('mongodb://127.0.0.1:27017/mestodb');
+app.use(errorHandler);
 
 app.listen(PORT);
