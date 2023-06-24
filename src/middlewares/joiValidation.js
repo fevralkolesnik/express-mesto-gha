@@ -4,7 +4,7 @@ const RegExpURL = /^(https?:\/\/(www\.)?)([-a-zA-Z0-9\W]){1,}/;
 
 const validationUserId = celebrate({
   params: Joi.object().keys({
-    userId: Joi.string().hex().length(24),
+    userId: Joi.string().required().hex().length(24),
   }),
 });
 

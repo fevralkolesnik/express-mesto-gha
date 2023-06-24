@@ -2,7 +2,7 @@ const mongoose = require('mongoose');
 const bcrypt = require('bcryptjs');
 const User = require('../models/user');
 const { signToken } = require('../utils/jwtAuth');
-const NotFoundError = require('../errors/NotFoundError');
+const DocumentNotFoundError = require('../errors/DocumentNotFoundError');
 const ValidationError = require('../errors/ValidationError');
 const DuplicateKeyError = require('../errors/DuplicateKeyError');
 const UnauthorizedError = require('../errors/UnauthorizedError');
@@ -25,10 +25,10 @@ const getUser = (req, res, next) => {
     .then((user) => res.status(200).send({ data: user }))
     .catch((err) => {
       if (err instanceof mongoose.Error.DocumentNotFoundError) {
-        return next(new NotFoundError('Пользователь по указанному _id не найден'));
+        return next(new DocumentNotFoundError('Пользователь по указанному _id не найден'));
       }
       if (err instanceof mongoose.Error.CastError) {
-        return next(new NotFoundError('Передан невалидный _id'));
+        return next(new ValidationError('Передан невалидный _id'));
       }
       return next(err);
     });

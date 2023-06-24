@@ -1,6 +1,6 @@
 const mongoose = require('mongoose');
 const Card = require('../models/card');
-const NotFoundError = require('../errors/NotFoundError');
+const DocumentNotFoundError = require('../errors/DocumentNotFoundError');
 const ValidationError = require('../errors/ValidationError');
 const ForbiddenError = require('../errors/ForbiddenError');
 
@@ -39,10 +39,10 @@ module.exports.deleteCard = (req, res, next) => {
     })
     .catch((err) => {
       if (err instanceof mongoose.Error.DocumentNotFoundError) {
-        return next(new NotFoundError('Карточка с указанным _id не найдена'));
+        return next(new DocumentNotFoundError('Карточка с указанным _id не найдена'));
       }
       if (err instanceof mongoose.Error.CastError) {
-        return next(new NotFoundError('Передан невалидный _id'));
+        return next(new ValidationError('Передан невалидный _id'));
       }
       return next(err);
     });
@@ -60,10 +60,10 @@ module.exports.likeCard = (req, res, next) => {
     .then((card) => res.status(200).send({ data: card }))
     .catch((err) => {
       if (err instanceof mongoose.Error.DocumentNotFoundError) {
-        return next(new NotFoundError('Передан несуществующий _id карточки'));
+        return next(new DocumentNotFoundError('Передан несуществующий _id карточки'));
       }
       if (err instanceof mongoose.Error.CastError) {
-        return next(new NotFoundError('Передан невалидный _id'));
+        return next(new ValidationError('Передан невалидный _id'));
       }
       return next(err);
     });
@@ -81,10 +81,10 @@ module.exports.dislikeCard = (req, res, next) => {
     .then((card) => res.status(200).send({ data: card }))
     .catch((err) => {
       if (err instanceof mongoose.Error.DocumentNotFoundError) {
-        return next(new NotFoundError('Передан несуществующий _id карточки'));
+        return next(new DocumentNotFoundError('Передан несуществующий _id карточки'));
       }
       if (err instanceof mongoose.Error.CastError) {
-        return next(new NotFoundError('Передан невалидный _id'));
+        return next(new ValidationError('Передан невалидный _id'));
       }
       return next(err);
     });
