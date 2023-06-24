@@ -5,7 +5,7 @@ const auth = (req, res, next) => {
   const { authorization } = req.headers;
 
   if (!authorization || !authorization.startsWith('Bearer ')) {
-    next(new UnauthorizedError('Пользователь не авторизован'));
+    return next(new UnauthorizedError('Пользователь не авторизован'));
   }
 
   const token = authorization.replace('Bearer ', '');
@@ -16,9 +16,9 @@ const auth = (req, res, next) => {
     req.user = {
       _id: payload._id,
     };
-    next();
+    return next();
   } catch (err) {
-    next(new UnauthorizedError('Пользователь не авторизован'));
+    return next(new UnauthorizedError('Пользователь не авторизован'));
   }
 };
 

@@ -1,7 +1,7 @@
 const express = require('express');
 const mongoose = require('mongoose');
 const { errors } = require('celebrate');
-const DocumentNotFoundError = require('./errors/DocumentNotFoundError');
+const DocumentNotFoundError = require('./errors/NotFoundError');
 const { createUser, login } = require('./controllers/users');
 const { auth } = require('./middlewares/auth');
 const { errorHandler } = require('./middlewares/errorHandler');
@@ -22,8 +22,8 @@ app.use(auth);
 app.use('/users', require('./routes/users'));
 app.use('/cards', require('./routes/cards'));
 
-app.use(() => {
-  throw new DocumentNotFoundError('Данная страница не найдена');
+app.use((req, res, next) => {
+  next(new DocumentNotFoundError('Данная страница не найдена'));
 });
 
 app.use(errors());
