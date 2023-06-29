@@ -26,8 +26,8 @@ app.get('/crash-test', () => {
   }, 0);
 });
 
-app.post('/users/signup', validationCreateUser, createUser);
-app.post('/users/signin', validationLogin, login);
+app.post('/signup', validationCreateUser, createUser);
+app.post('/signin', validationLogin, login);
 
 app.use(auth);
 
