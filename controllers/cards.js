@@ -6,7 +6,9 @@ const ForbiddenError = require('../errors/ForbiddenError');
 
 module.exports.getCards = (req, res, next) => {
   Card.find({})
-    .then((cards) => res.status(200).send({ data: cards }))
+    .then((cards) => {
+      res.status(200).send(cards);
+    })
     .catch((err) => next(err));
 };
 
@@ -14,7 +16,7 @@ module.exports.createCard = (req, res, next) => {
   const { name, link } = req.body;
 
   Card.create({ name, link, owner: req.user._id })
-    .then((card) => res.status(200).send({ data: card }))
+    .then((card) => res.status(200).send(card))
     .catch((err) => {
       if (err instanceof mongoose.Error.ValidationError) {
         return next(new ValidationError('Переданы некорректные данные при создании карточки'));
@@ -34,7 +36,7 @@ module.exports.deleteCard = (req, res, next) => {
       }
       return Card.deleteOne()
         .then(() => {
-          res.status(200).send({ data: card });
+          res.status(200).send(card);
         });
     })
     .catch((err) => {
@@ -57,7 +59,7 @@ module.exports.likeCard = (req, res, next) => {
     { new: true },
   )
     .orFail()
-    .then((card) => res.status(200).send({ data: card }))
+    .then((card) => res.status(200).send(card))
     .catch((err) => {
       if (err instanceof mongoose.Error.DocumentNotFoundError) {
         return next(new DocumentNotFoundError('Передан несуществующий _id карточки'));
@@ -78,7 +80,7 @@ module.exports.dislikeCard = (req, res, next) => {
     { new: true },
   )
     .orFail()
-    .then((card) => res.status(200).send({ data: card }))
+    .then((card) => res.status(200).send(card))
     .catch((err) => {
       if (err instanceof mongoose.Error.DocumentNotFoundError) {
         return next(new DocumentNotFoundError('Передан несуществующий _id карточки'));
